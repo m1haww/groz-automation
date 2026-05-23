@@ -88,13 +88,19 @@ Format obligatoriu:
 
 #### 4. Commit + notifică
 
-- Commit pe branch `spec/{task_id}` în repo
-- Mută Notion task din `inbox/` în `specs/`
-- Postează pe Slack #groz-specs:
+OBLIGATORIU — fără acest pas spec-ul nu există:
+
+1. Scrie fișierul `groz-workspace/specs/{task_id}.md` în repo (GitHub MCP write)
+2. Mută task-ul: șterge `groz-workspace/inbox/{task_id}.md`
+3. Commit direct pe `main` cu mesaj: `feat(spec): {task_id} — {title}`
+4. Push pe `main`
+5. Postează pe Slack #groz-specs:
   ```
   📝 Spec gata pentru #{task_id}: {title}
   Vezi: {link GitHub}
   ```
+
+⚠️ Dacă nu faci commit + push, spec-ul este pierdut. Verifică că fișierul există în repo înainte să continui.
 
 #### 5. REPORTING (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
 
