@@ -7,12 +7,13 @@
 
 ## Filosofia
 
-Orice app GROZ iOS este, în esență, **un gate-system în 3 stadii**:
+Orice app GROZ iOS este, în esență, **un gate-system în 4 stadii**:
 
 ```
-[App Launch] → [Onboarding A/B] → [Phone Registration] → [Hard Paywall] → [App Real]
-                     ↑                                          ↑
-                Firebase Remote Config              RevenueCat (entitlement "Main")
+[App Launch] → [Onboarding A/B] → [Push Notifications] → [ATT Prompt] → [Hard Paywall] → [App Real]
+                     ↑                    ↑                                     ↑
+              Firebase Remote Config   finalul           AppTrackingTransparency  RevenueCat
+                  (A/B variant)       onboarding-ului                          (entitlement unic)
 ```
 
 Tot ce e DUPĂ paywall = feature specific app-ului. Tot ce e ÎNAINTE = template comun.
@@ -40,7 +41,6 @@ struct GROZApp: App {
         WindowGroup {
             // Conditional routing:
             //   - if !onboardingDone → OnboardingEntryView
-            //   - if !phoneRegistered → PhoneSelectionView
             //   - else → ContentView (app-specific)
             //
             // Overlay:
@@ -71,7 +71,7 @@ Fișiere standard:
 | Fișier | Rol |
 |---|---|
 | `OnboardingEntryView.swift` | router: region gate + variant routing |
-| `OnboardingShared.swift` | enum `OnboardingABVariant` + `PhoneSelectionView` |
+| `OnboardingShared.swift` | enum `OnboardingABVariant` + shared components |
 | `OnboardingVariantA.swift` | variant principal A |
 | `OnboardingVariantB.swift` | variant B |
 | `OnboardingVariantC.swift` | variant C |
@@ -221,9 +221,12 @@ App Launch
               └── FCM token primit → AppViewModel.saveFCMToken()
 ```
 
-### Allow în onboarding
+### Allow în onboarding (OBLIGATORIU)
 
-Cere permission la finalul flow-ului de onboarding (ultimul step), NU la launch direct. Pattern conversion mai bun.
+- Cere permission la **ultimul step** al onboarding-ului — NU la launch direct
+- Imediat după notifications → ATT prompt (AppTrackingTransparency)
+- Ordinea: `Notifications → ATT → Paywall`
+- Pattern conversion mai bun decât la launch
 
 ### Payload-to-navigation
 
@@ -289,7 +292,7 @@ GROZApp/
 │
 ├── OnboardingABTesting/
 │   ├── OnboardingEntryView.swift     # router: region + A/B
-│   ├── OnboardingShared.swift        # enum + PhoneSelectionView
+│   ├── OnboardingShared.swift        # enum OnboardingABVariant + shared components
 │   ├── OnboardingVariantA.swift
 │   ├── OnboardingVariantB.swift
 │   ├── OnboardingVariantC.swift
@@ -302,8 +305,7 @@ GROZApp/
 │
 ├── Services/
 │   ├── SubscriptionService.swift     # RevenueCat
-│   ├── UserService.swift             # user registration API
-│   └── ServerService.swift           # API base (app-specific endpoints)
+│   └── {AppName}Service.swift        # feature-specific API (ex: ClaudeService.swift)
 │
 ├── Utilities/
 │   ├── AnalyticsManager.swift        # Firebase
