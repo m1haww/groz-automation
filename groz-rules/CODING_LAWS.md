@@ -29,7 +29,9 @@
 
 ### Reguli stricte
 
-- ✅ Bundle ID unic per app: `com.groz.<appname>` (NU folosi același)
+- ✅ Bundle ID unic per app — format: `com.<appname>.app` sau `ai.<appname>.chat` etc.
+- ❌ NICIODATĂ `com.groz.*` — "groz" NU apare în niciun Bundle ID (leagă toate apps)
+- ❌ NICIODATĂ același developer name sau company name vizibil în toate apps
 - ✅ Display name unic, NU variațiuni triviale ("Call Recorder", "Call Recorder Pro" → reject)
 - ✅ App Store keywords diferite (NU copy-paste între apps)
 - ✅ Screenshots originali per app (NU reciclate cu altă culoare)
@@ -211,12 +213,13 @@ Idealuri:
 - App 1: `api.app1.com`
 - App 2: `api.app2.com`
 
-Practică:
+Practică (dacă ai un singur server):
 
-- App 1: `groz-api.com/app1/...`
-- App 2: `groz-api.com/app2/...`
+- App 1: `api.neura.app/...` (subdomain per app, fără "groz")
+- App 2: `api.callvault.app/...`
 
-Dar **NU expune că sunt din același cluster** prin headers / response format identic.
+- ❌ NICIODATĂ `groz-api.com` — expune că sunt din același owner
+- ❌ NICIODATĂ același subdomain pentru mai multe apps
 
 ### C. Response format
 
@@ -244,8 +247,9 @@ NU folosi același `"Main"` peste tot:
 
 ### B. Product IDs
 
-- App 1: `com.groz.app1.premium.monthly`
-- App 2: `com.groz.app2.pro.yearly`
+- App 1: `com.neura.premium.monthly` (numele app-ului, NU groz)
+- App 2: `com.callvault.pro.yearly`
+- ❌ NICIODATĂ `com.groz.*` în product IDs
 
 ### C. Paywall design
 
@@ -261,8 +265,9 @@ NU folosi același `"Main"` peste tot:
 
 NU folosi același Firebase project pentru toate. Apple verifică `GoogleService-Info.plist`:
 
-- App 1: Firebase project `groz-app1`
-- App 2: Firebase project `groz-app2`
+- App 1: Firebase project `neura-prod` (numele app-ului, NU groz)
+- App 2: Firebase project `callvault-prod`
+- ❌ NICIODATĂ `groz-*` ca nume de Firebase project (identifică sursa comună)
 
 ### B. Event naming
 
@@ -326,7 +331,8 @@ Chiar dacă logica e similară, **redenumește metode + variabile.**
 
 ### 🚨 Lista de evitat ABSOLUT
 
-- ❌ Același nume de clasă în 2+ apps GROZ
+- ❌ Cuvântul "groz" în Bundle ID, Product ID, Firebase project, backend URL, sau orice artefact public
+- ❌ Același nume de clasă în 2+ apps
 - ❌ Același Localizable.strings key în 2+ apps
 - ❌ Același Firebase Remote Config key în 2+ apps
 - ❌ Același icon cu altă culoare
