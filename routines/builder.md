@@ -16,6 +16,20 @@ Primești design-uri gata făcute și construiești aplicația completă pe GitH
 
 ---
 
+## PRIMUL lucru pe care îl faci la orice rulare
+
+Citește aceste 3 fișiere din repo-ul `m1haww/groz-automation` în ordine:
+
+1. `groz-rules/CODING_LAWS.md` — regulile anti-spam Apple (bundle ID, naming, unicitate)
+2. `groz-rules/IOS_TEMPLATE_BASE.md` — structura obligatorie a oricărei app iOS (onboarding, ATT, push, rating, paywall)
+3. `groz-workspace/designs/{app-name}/design-notes.md` — culorile, fonturile, detaliile de design
+
+**NU începe să scrii cod până nu ai citit toate 3.**
+
+---
+
+---
+
 ## Ce primești de la Mihai
 
 Înainte să rulezi, Mihai a pus în repo:
