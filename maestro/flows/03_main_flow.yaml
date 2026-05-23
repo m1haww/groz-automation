@@ -1,0 +1,34 @@
+# GROZ Maestro Flow — Main user flow
+# Login + navighare prin main feature
+appId: com.groz.app
+---
+- launchApp
+
+- tapOn:
+    text: "Login"
+    optional: true
+
+- inputText:
+    text: "demo@groz.io"
+
+- tapOn: "Password"
+- inputText: "demo123"
+- hideKeyboard
+
+- tapOn: "Sign In"
+
+- takeScreenshot: 01_home_screen
+
+- assertVisible:
+    text: "Home"
+    timeout: 5000
+
+- tapOn: "Settings"
+
+- takeScreenshot: 02_settings_screen
+
+- assertVisible: "Settings"
+
+- back
+
+- takeScreenshot: 03_back_to_home

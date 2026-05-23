@@ -1,0 +1,17 @@
+# GROZ Maestro global config
+# Aplicat la toate flow-urile din .maestro/flows/
+flows:
+  - flows/*.yaml
+
+executionOrder:
+  flowsOrder:
+    - 01_launch.yaml
+    - 02_onboarding.yaml
+    - 03_main_flow.yaml
+
+# Tags pentru rulări selective (ex: maestro test --include-tags smoke)
+includeTags:
+  - smoke
+
+excludeTags:
+  - slow

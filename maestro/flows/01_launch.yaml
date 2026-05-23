@@ -1,0 +1,12 @@
+# GROZ Maestro Flow — Smoke test launch
+# Verifică doar că app-ul pornește și screen-ul principal apare
+appId: com.groz.app  # înlocuiește cu bundle ID-ul tău
+---
+- launchApp:
+    clearState: true
+
+- takeScreenshot: 01_app_launched
+
+- assertVisible:
+    text: ".*"  # orice text vizibil — confirmă că UI s-a încărcat
+    timeout: 10000

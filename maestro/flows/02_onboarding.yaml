@@ -1,0 +1,27 @@
+# GROZ Maestro Flow — Onboarding happy path
+# Parcurge fluxul de onboarding și capturează screenshot per pas
+appId: com.groz.app
+---
+- launchApp:
+    clearState: true
+
+- takeScreenshot: 01_welcome
+
+- tapOn:
+    text: "Get Started"
+    optional: false
+
+- takeScreenshot: 02_signup_screen
+
+- inputText: "test@groz.io"
+- hideKeyboard
+
+- takeScreenshot: 03_email_entered
+
+- tapOn: "Continue"
+
+- takeScreenshot: 04_after_continue
+
+- assertVisible:
+    text: "Verify"
+    timeout: 5000
