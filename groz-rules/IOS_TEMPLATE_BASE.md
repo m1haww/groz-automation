@@ -7,13 +7,22 @@
 
 ## Filosofia
 
-Orice app GROZ iOS este, în esență, **un gate-system în 4 stadii**:
+Orice app GROZ iOS este, în esență, **un gate-system în 5 stadii**:
 
 ```
-[App Launch] → [Onboarding A/B] → [Push Notifications] → [ATT Prompt] → [Hard Paywall] → [App Real]
-                     ↑                    ↑                                     ↑
-              Firebase Remote Config   finalul           AppTrackingTransparency  RevenueCat
-                  (A/B variant)       onboarding-ului                          (entitlement unic)
+[App Launch]
+     ↓
+[Onboarding A/B]  ← Firebase Remote Config (variant a/b/c/d/e)
+     ↓
+[ATT Prompt]      ← AppTrackingTransparency (primul prompt, înainte de orice)
+     ↓
+[Push Notifications Permission]
+     ↓
+[Rating Request]  ← SKStoreReviewManager — pe ultimul ecran de onboarding
+     ↓
+[Hard Paywall]    ← RevenueCat (entitlement unic per app)
+     ↓
+[App Real]
 ```
 
 Tot ce e DUPĂ paywall = feature specific app-ului. Tot ce e ÎNAINTE = template comun.
@@ -221,12 +230,22 @@ App Launch
               └── FCM token primit → AppViewModel.saveFCMToken()
 ```
 
-### Allow în onboarding (OBLIGATORIU)
+### Ordinea OBLIGATORIE în onboarding (nu schimba)
 
-- Cere permission la **ultimul step** al onboarding-ului — NU la launch direct
-- Imediat după notifications → ATT prompt (AppTrackingTransparency)
-- Ordinea: `Notifications → ATT → Paywall`
-- Pattern conversion mai bun decât la launch
+```
+Step 1-N  → conținut onboarding (A/B variant)
+Step final →
+    1. ATT prompt        (AppTrackingTransparency)
+    2. Push Notifications permission
+    3. Rating request    (SKStoreReviewManager.requestReview)
+    → redirect la Paywall
+```
+
+**De ce această ordine:**
+- ATT primul — înainte să ceri orice altceva, maxim acceptance
+- Push după ATT — userul e deja în mood de "accept"
+- Rating pe ultimul ecran — userul e cel mai entuziasmat acum, înainte de paywall
+- NU cere rating după paywall — userul poate fi frustrat de preț
 
 ### Payload-to-navigation
 
@@ -364,7 +383,9 @@ GROZApp/
 - Verifică obligatoriu:
   - [ ] App pornește, Firebase configurat
   - [ ] Onboarding apare, variantă servită din Remote Config
-  - [ ] Notification permission cerută în onboarding (nu la launch)
+  - [ ] Ordinea corectă: ATT → Push Notifications → Rating → Paywall
+  - [ ] ATT prompt apare primul (nu push, nu rating)
+  - [ ] Rating request pe ultimul ecran onboarding (înainte de paywall)
   - [ ] Hard paywall apare după onboarding (nu se poate skip)
   - [ ] Toate 15 limbile sunt prezente în `.lproj/`
   - [ ] AppTrackingTransparency prompt apare
