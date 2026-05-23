@@ -1,65 +1,20 @@
 {
   "system_enabled": true,
-  "version": "0.2.0",
+  "version": "1.0.0",
   "last_updated": "2026-05-23T00:00:00Z",
 
   "budget": {
-    "tokens_used_today": 0,
-    "tokens_cap_daily": 1000000,
     "runs_today": 0,
-    "runs_cap_daily": 100,
-    "last_reset": "2026-05-23T00:00:00Z",
-    "alert_threshold_yellow": 0.20,
-    "autopause_threshold": 0.25,
-    "tokens_used_this_month": 0,
-    "tokens_cap_monthly": 25000000
+    "runs_cap_daily": 15,
+    "last_reset": "2026-05-23T00:00:00Z"
   },
 
   "agents": {
-    "watchdog": {
-      "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
-      "status": "idle"
-    },
-    "orchestrator": {
-      "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
-      "status": "idle"
-    },
-    "proposer": {
-      "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
-      "status": "idle"
-    },
     "builder": {
       "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
-      "status": "idle"
-    },
-    "critic": {
-      "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
-      "status": "idle"
-    },
-    "qa_tester": {
-      "last_run": null,
-      "last_run_tokens": 0,
-      "total_runs_today": 0,
-      "total_tokens_today": 0,
       "status": "idle"
     }
   },
 
-  "current_lock": null,
-  "alerts": []
+  "current_lock": null
 }
