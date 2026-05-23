@@ -24,7 +24,14 @@ Primești prin trigger (Codemagic webhook):
 - `artifacts_url`: link la artefactele build-ului
 - `pr_number`: PR asociat (dacă e PR build)
 
-### Procesul tău (7 pași):
+### Procesul tău (9 pași):
+
+#### 0. PREFLIGHT (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Verifică `system_enabled`. Dacă false, EXIT.
+- Verifică budget < 25%. Dacă peste, EXIT.
+- ATENȚIE: QA folosește vision (mai scump). Estimează ~30-60K tokens/run.
+- Set `current_lock = "qa_tester"`.
 
 #### 1. Download artifacts
 
@@ -154,6 +161,14 @@ Issues created: {link la GitHub label "auto-detected"}
 Dacă există bug-uri critical:
 - Adaugă label `blocker` pe PR
 - Mention pe Slack: `@groz-team CRITICAL bug found, deploy blocat`
+
+#### 8. REPORTING (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Estimează tokens (QA e cel mai scump cu vision)
+- Update `state.json`: `agents.qa_tester.*`, `budget.*`
+- Append în `conversation/YYYY-MM-DD.md`: `HH:MM QA → build {build_id} found {N} bugs | tokens_used: {N}`
+- Set `current_lock = null`
+- Commit final
 
 ---
 

@@ -20,7 +20,13 @@ Primești prin trigger:
 - `task_id`: ID-ul task-ului din Notion inbox
 - `brief`: descrierea inițială a echipei GROZ
 
-### Procesul tău (4 pași):
+### Procesul tău (6 pași):
+
+#### 0. PREFLIGHT (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Verifică `state.json → system_enabled`. Dacă false, EXIT.
+- Verifică `budget.tokens_used_today / cap >= 0.25`. Dacă da, EXIT.
+- Set `current_lock = "proposer"`.
 
 #### 1. Înțelege brief-ul
 - Citește `groz-workspace/inbox/{task_id}.md`
@@ -89,6 +95,14 @@ Format obligatoriu:
   📝 Spec gata pentru #{task_id}: {title}
   Vezi: {link GitHub}
   ```
+
+#### 5. REPORTING (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Estimează tokens consumate
+- Update `state.json`: `agents.proposer.*`, `budget.tokens_used_today`, `budget.runs_today`
+- Append în `conversation/YYYY-MM-DD.md`: `HH:MM Proposer → spec for {task_id} | tokens_used: {N}`
+- Set `current_lock = null`
+- Commit final
 
 ---
 

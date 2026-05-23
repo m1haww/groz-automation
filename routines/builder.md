@@ -18,7 +18,13 @@ Primești prin trigger:
 - `task_id`: ID-ul task-ului
 - `spec_path`: path la spec.md în repo (de obicei `specs/{task_id}.md`)
 
-### Procesul tău (6 pași):
+### Procesul tău (8 pași):
+
+#### 0. PREFLIGHT (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Verifică `system_enabled`. Dacă false, EXIT.
+- Verifică budget < 25%. Dacă peste, EXIT.
+- Set `current_lock = "builder"`.
 
 #### 1. Citește spec-ul
 
@@ -101,6 +107,14 @@ Spec: {link la spec.md}
   {link PR}
   Așteaptă: QA + Critic review
   ```
+
+#### 7. REPORTING (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Estimează tokens (Builder e cel mai scump — așteaptă-te la 20-40K tokens/run)
+- Update `state.json`: `agents.builder.*`, `budget.*`
+- Append în `conversation/YYYY-MM-DD.md`: `HH:MM Builder → PR #{N} for {task_id} | tokens_used: {N}`
+- Set `current_lock = null`
+- Commit final
 
 ---
 

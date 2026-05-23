@@ -21,7 +21,13 @@ Primești prin trigger:
 - `task_id`: task-ul asociat
 - `spec_path`: spec-ul original
 
-### Procesul tău (5 pași):
+### Procesul tău (7 pași):
+
+#### 0. PREFLIGHT (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Verifică `system_enabled`. Dacă false, EXIT.
+- Verifică budget < 25%. Dacă peste, EXIT.
+- Set `current_lock = "critic"`.
 
 #### 1. Pregătire
 
@@ -127,6 +133,14 @@ Postează pe Slack #groz-reviews:
 {X} blockers · {Y} suggestions
 {link}
 ```
+
+#### 6. REPORTING (obligatoriu — vezi `_SHARED_PREFLIGHT.md`)
+
+- Estimează tokens
+- Update `state.json`: `agents.critic.*`, `budget.*`
+- Append în `conversation/YYYY-MM-DD.md`: `HH:MM Critic → review PR #{N} score {X}/10 | tokens_used: {N}`
+- Set `current_lock = null`
+- Commit final
 
 ---
 
