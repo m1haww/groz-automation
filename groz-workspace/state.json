@@ -1,0 +1,19 @@
+{
+  "system_enabled": true,
+  "version": "0.1.0",
+  "budget": {
+    "tokens_used_today": 0,
+    "tokens_cap_daily": 5000000,
+    "runs_today": 0,
+    "runs_cap_daily": 100
+  },
+  "last_run_per_agent": {
+    "orchestrator": null,
+    "proposer": null,
+    "builder": null,
+    "critic": null,
+    "qa_tester": null
+  },
+  "current_lock": null,
+  "last_updated": "2026-05-23T00:00:00Z"
+}
