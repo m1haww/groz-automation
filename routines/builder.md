@@ -32,18 +32,34 @@ Primești prin trigger:
 - Identifică acceptance criteria (toate trebuie acoperite)
 - Verifică "Out of scope" — NU implementa nimic peste
 
-#### 2. Citește codebase-ul relevant
+#### 2. Creează repo nou pentru app
 
-- Folosește GitHub MCP pentru a vedea fișierele existente
-- Identifică:
-  - Unde se potrivește feature-ul (ce fișier modifici)
-  - Pattern-urile arhitecturale existente (MVVM, Coordinator etc)
-  - Convenții de naming din proiect
-- **NU schimba arhitectura existentă** dacă spec nu cere asta
+Fiecare app primește propriul repository GitHub:
 
-#### 3. Creează branch + scrie cod
+- Repo name: `{app-name-slug}` (ex: `ai-assistant`) — **fără "groz" în nume**
+- Visibility: **private**
+- Owner: `m1haww`
+- Descriere: spec-ul în 1 propoziție
 
-Branch: `feat/{task_id}-{slug}`
+Creează repo via GitHub MCP:
+```
+repo_name = spec["app_name"].lower().replace(" ", "-")  // "AI Assistant" → "ai-assistant"
+```
+
+Dacă repo-ul există deja → lucrezi pe el (nu îl recreezi).
+
+#### 3. Citește design-urile (dacă există)
+
+Verifică `groz-workspace/designs/{task_id}/` în groz-automation repo:
+- Citește toate PNG-urile / HTML-urile de design
+- Citește `design-notes.md` dacă există
+- Implementează **pixel-perfect** după design — nu improviza culori sau layout
+
+Dacă nu există design → implementează conform spec + color palette din task brief.
+
+#### 4. Scrie codul în repo-ul nou
+
+Branch: `main` (direct, e repo nou — nu e nevoie de PR intern)
 
 Pentru iOS (Swift):
 - SwiftUI dacă restul proiectului folosește SwiftUI
@@ -63,7 +79,7 @@ Pentru Flutter (Dart):
 - Pentru Flutter: `flutter_test`, widget tests + unit tests
 - Maestro flows update dacă schimbarea afectează UI flow
 
-#### 5. Deschide PR
+#### 5. Deschide PR în repo-ul app-ului
 
 PR title: `feat({task_id}): {short description}`
 
