@@ -16,5 +16,5 @@
     }
   },
 
-  "current_lock": "proposer"
+  "current_lock": null
 }
