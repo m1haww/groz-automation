@@ -158,10 +158,47 @@ Info.plist                         ← cu NSUserTrackingUsageDescription, etc.
 
 ---
 
-### PUNCT 5 — Push pe GitHub
+### PUNCT 5 — codemagic.yaml
+
+Creează `codemagic.yaml` în root-ul repo-ului nou:
+
+```yaml
+workflows:
+  ios-build:
+    name: iOS Build & Screenshot
+    max_build_duration: 30
+    environment:
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies (SPM)
+        script: xcodebuild -resolvePackageDependencies
+      - name: Build
+        script: |
+          xcodebuild \
+            -scheme "{AppName}" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
+            -configuration Debug \
+            build | xcpretty
+      - name: Run Maestro flows
+        script: |
+          maestro test .maestro/
+    artifacts:
+      - build/ios/outputs/**/*.ipa
+      - $HOME/Library/Logs/DiagnosticReports/**/*.ips
+    publishing:
+      slack:
+        channel: "#groz-builds"
+      email:
+        recipients:
+          - normandcarie782@gmail.com
+```
+
+### PUNCT 6 — Push pe GitHub
 
 1. Commit toate fișierele pe `main` cu mesaj: `feat: initial {app-name} iOS app`
 2. Confirmă că repo-ul e live: `github.com/m1haww/{app-slug}`
+3. Codemagic va porni automat build-ul la push
 
 ---
 
