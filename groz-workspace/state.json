@@ -1,15 +1,24 @@
 {
   "system_enabled": true,
   "version": "1.0.0",
-  "last_updated": "2026-05-23T00:00:00Z",
+  "last_updated": "2026-05-24T00:00:00Z",
 
   "budget": {
-    "runs_today": 0,
+    "runs_today": 1,
     "runs_cap_daily": 15,
-    "last_reset": "2026-05-23T00:00:00Z"
+    "tokens_used_today": 2500,
+    "tokens_cap_daily": 100000,
+    "last_reset": "2026-05-24T00:00:00Z"
   },
 
   "agents": {
+    "orchestrator": {
+      "last_run": "2026-05-24T00:00:00Z",
+      "last_run_tokens": 2500,
+      "total_runs_today": 1,
+      "total_tokens_today": 2500,
+      "status": "idle"
+    },
     "builder": {
       "last_run": null,
       "status": "idle"
