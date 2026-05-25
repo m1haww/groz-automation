@@ -158,9 +158,13 @@ Info.plist                         ← cu NSUserTrackingUsageDescription, etc.
 
 ---
 
-### PUNCT 5 — codemagic.yaml
+### PUNCT 5 — codemagic.yaml + Maestro flows (OBLIGATORIU)
 
-Creează `codemagic.yaml` în root-ul repo-ului nou:
+⚠️ **Nu poți considera task-ul completat fără aceste fișiere.** QA Tester nu poate verifica nimic fără ele.
+
+Creează **OBLIGATORIU** în root-ul repo-ului nou:
+
+**A. `codemagic.yaml`** — config pentru build automat:
 
 ```yaml
 workflows:
@@ -187,12 +191,47 @@ workflows:
       - build/ios/outputs/**/*.ipa
       - $HOME/Library/Logs/DiagnosticReports/**/*.ips
     publishing:
-      slack:
-        channel: "#groz-builds"
       email:
         recipients:
           - normandcarie782@gmail.com
 ```
+
+**B. `.maestro/` folder cu flows pentru screenshots:**
+
+Creează minim aceste 3 fișiere:
+
+```yaml
+# .maestro/01_onboarding.yaml
+appId: {bundle_id}
+---
+- launchApp:
+    clearState: true
+- takeScreenshot: "01_launch"
+- waitForAnimationToEnd
+- takeScreenshot: "02_onboarding_start"
+# ... (un screenshot după fiecare step important)
+```
+
+```yaml
+# .maestro/02_paywall.yaml
+appId: {bundle_id}
+---
+- launchApp
+- waitForAnimationToEnd
+- takeScreenshot: "06_paywall_visible"
+```
+
+```yaml
+# .maestro/03_{feature}.yaml  (ex: 03_chat.yaml)
+appId: {bundle_id}
+---
+- launchApp
+- waitForAnimationToEnd
+- takeScreenshot: "08_home"
+# ... + interacțiuni principale + screenshot după fiecare
+```
+
+**Regula:** câte un screenshot înainte și după fiecare interacțiune importantă.
 
 ### PUNCT 6 — Push pe GitHub
 
