@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Chatbot — Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="redesign-tokens.css" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; }
+  body { font-family: "Geist", -apple-system, system-ui, sans-serif; }
+  #app { width: 100%; height: 100vh; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="redesign-icons.jsx"></script>
+<script type="text/babel" src="redesign-shell.jsx"></script>
+<script type="text/babel" src="redesign-screens-a.jsx"></script>
+<script type="text/babel" src="redesign-screens-b.jsx"></script>
+<script type="text/babel" src="redesign-screens-c.jsx"></script>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+  const {
+    DesignCanvas, DCSection, DCArtboard,
+    TweaksPanel, useTweaks, TweakSection, TweakColor, TweakRadio,
+    ScreenOnboarding, ScreenHome, ScreenChatsList,
+    ScreenModels, ScreenChatEmpty, ScreenChatActive,
+    ScreenTasks, ScreenSettings
+  } = window;
+
+  // EDITMODE: tunable defaults so you can dial in the neon
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "neon": "#5dd935",
+    "deviceFrame": "screen"
+  }/*EDITMODE-END*/;
+
+  // helper: derive neon-related tokens from a single hex
+  function hexToRgb(hex) {
+    const m = hex.replace("#","");
+    const n = m.length === 3 ? m.split("").map(c => c+c).join("") : m;
+    return {
+      r: parseInt(n.slice(0,2),16),
+      g: parseInt(n.slice(2,4),16),
+      b: parseInt(n.slice(4,6),16)
+    };
+  }
+  function applyTokens(neon) {
+    const { r, g, b } = hexToRgb(neon);
+    // a slightly desaturated, deeper variant for borders & dims
+    const dim  = `rgb(${Math.round(r*0.55)}, ${Math.round(g*0.65)}, ${Math.round(b*0.30)})`;
+    const deep = `rgb(${Math.round(r*0.34)}, ${Math.round(g*0.40)}, ${Math.round(b*0.16)})`;
+    const hi   = `rgb(${Math.min(255, r+40)}, ${Math.min(255, g+10)}, ${Math.min(255, b+60)})`;
+    const root = document.documentElement;
+    root.style.setProperty("--neon", neon);
+    root.style.setProperty("--neon-hi", hi);
+    root.style.setProperty("--neon-dim", dim);
+    root.style.setProperty("--neon-deep", deep);
+    root.style.setProperty("--neon-glow", `rgba(${r},${g},${b},0.45)`);
+    root.style.setProperty("--neon-glow-soft", `rgba(${r},${g},${b},0.12)`);
+    root.style.setProperty("--neon-tint", `rgba(${r},${g},${b},0.06)`);
+  }
+
+  function App() {
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    useEffect(() => { applyTokens(t.neon); }, [t.neon]);
+
+    // device chrome around each artboard (optional)
+    const W = 390, H = 844;
+
+    return (
+      <React.Fragment>
+        <DesignCanvas>
+
+          <DCSection id="launch" title="Launch" subtitle="One screen replaces five marketing screens">
+            <DCArtboard id="onboarding" label="01 · Onboarding" width={W} height={H}>
+              <ScreenOnboarding/>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="home" title="Main app" subtitle="Chat-first home, history-as-spine">
+            <DCArtboard id="home" label="02 · Home" width={W} height={H}>
+              <ScreenHome/>
+            </DCArtboard>
+            <DCArtboard id="chats-list" label="03 · Chats — full history" width={W} height={H}>
+              <ScreenChatsList/>
+            </DCArtboard>
+            <DCArtboard id="models" label="04 · Models picker" width={W} height={H}>
+              <ScreenModels/>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="conversation" title="Conversation" subtitle="Empty state addresses the audit's #2 finding">
+            <DCArtboard id="chat-empty" label="05 · New chat" width={W} height={H}>
+              <ScreenChatEmpty/>
+            </DCArtboard>
+            <DCArtboard id="chat-active" label="06 · Chat in progress" width={W} height={H}>
+              <ScreenChatActive/>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="tasks" title="Tasks &amp; account" subtitle="Mature, listing-style — not illustrated posters">
+            <DCArtboard id="tasks" label="07 · Tasks" width={W} height={H}>
+              <ScreenTasks/>
+            </DCArtboard>
+            <DCArtboard id="settings" label="08 · You / Settings" width={W} height={H}>
+              <ScreenSettings/>
+            </DCArtboard>
+          </DCSection>
+
+        </DesignCanvas>
+
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="ACCENT">
+            <TweakColor
+              label="Neon"
+              value={t.neon}
+              onChange={(v) => setTweak("neon", v)}
+              options={["#b6ff5c", "#a8ff35", "#92f03a", "#5dd935", "#c8ff66", "#7dff4f"]}
+            />
+          </TweakSection>
+        </TweaksPanel>
+      </React.Fragment>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
+</script>
+
+</body>
+</html>

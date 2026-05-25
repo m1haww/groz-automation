@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Chatbot — UX Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #ece6da;
+    --paper-2: #e3dccc;
+    --ink: #1a1815;
+    --ink-2: #423d34;
+    --ink-3: #7a7264;
+    --rule: #c8bfac;
+    --accent: #c8421f;     /* tomato — for callouts */
+    --accent-soft: #f3d5c8;
+    --good: #2e6f47;
+    --warn: #b97a18;
+    --bad:  #c8421f;
+    --chip: #d7cfbb;
+    --serif: "Instrument Serif", "Times New Roman", serif;
+    --sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* paper grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(1200px 800px at 20% 0%, rgba(200,190,170,.35), transparent 60%),
+      radial-gradient(900px 700px at 90% 100%, rgba(200,190,170,.25), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 64px 56px 120px;
+  }
+
+  /* ============ MASTHEAD ============ */
+  .masthead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: .98;
+    letter-spacing: -.015em;
+    margin: 12px 0 0;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.7;
+  }
+  .meta strong { color: var(--ink); font-weight: 500; }
+
+  .lede {
+    margin: 28px 0 8px;
+    max-width: 760px;
+    font-family: var(--serif);
+    font-size: 26px;
+    line-height: 1.35;
+    color: var(--ink-2);
+  }
+  .lede em { font-style: italic; color: var(--ink); }
+
+  /* ============ SECTION CHROME ============ */
+  section { margin-top: 96px; scroll-margin-top: 40px; }
+  .section-head {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 36px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: .14em;
+  }
+  .section-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1;
+    letter-spacing: -.01em;
+    margin: 0;
+  }
+  .section-head h2 em { font-style: italic; color: var(--accent); }
+  .section-sub {
+    grid-column: 2;
+    margin-top: 12px;
+    color: var(--ink-2);
+    max-width: 720px;
+    font-size: 15px;
+  }
+
+  /* ============ TOC ============ */
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin-top: 36px;
+    border-top: 1px solid var(--rule);
+  }
+  .toc a {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 15px;
+    transition: background .15s ease;
+  }
+  .toc a:hover { background: rgba(200,66,31,.06); }
+  .toc a:nth-child(odd) { border-right: 1px solid var(--rule); padding-right: 24px; }
+  .toc a:nth-child(even) { padding-left: 24px; }
+  .toc a .n { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .toc a .p { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+  /* ============ FLOW STRIP ============ */
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 14px;
+  }
+  .strip figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .strip .phone-mini {
+    aspect-ratio: 9 / 19.5;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid rgba(0,0,0,.2);
+    box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 8px 20px rgba(30,20,5,.08);
+  }
+  .strip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .strip figcaption {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+  .strip figcaption .num { color: var(--accent); }
+
+  /* ============ PHONE FRAME ============ */
+  .phone {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 38px;
+    background: #000;
+    padding: 6px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,.6),
+      0 30px 60px -20px rgba(20,15,5,.35),
+      0 8px 20px -8px rgba(20,15,5,.25);
+  }
+  .phone .screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #000;
+  }
+  .phone .screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* dynamic island */
+  .phone .island {
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 32%;
+    height: 22px;
+    background: #000;
+    border-radius: 14px;
+    z-index: 2;
+  }
+  /* callout pins on the phone */
+  .pin {
+    position: absolute;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 3;
+    box-shadow: 0 0 0 4px rgba(200,66,31,.18), 0 6px 14px rgba(200,66,31,.45);
+    cursor: default;
+  }
+  .pin.good { background: var(--good); box-shadow: 0 0 0 4px rgba(46,111,71,.18), 0 6px 14px rgba(46,111,71,.4); }
+  .pin.warn { background: var(--warn); box-shadow: 0 0 0 4px rgba(185,122,24,.18), 0 6px 14px rgba(185,122,24,.4); }
+
+  /* ============ ANNOTATED LAYOUT ============ */
+  .annotated {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .annotated.flip { grid-template-columns: 1fr 320px; }
+  .notes-col h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0 0 8px;
+    letter-spacing: -.005em;
+  }
+  .notes-col h3 em { font-style: italic; color: var(--accent); }
+  .notes-col .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+  .notes-col .summary {
+    font-family: var(--serif);
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--ink-2);
+    margin: 0 0 24px;
+    max-width: 56ch;
+  }
+  .notes-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .notes-list li {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+  }
+  .notes-list li:last-child { border-bottom: 1px solid var(--rule); }
+  .notes-list .badge {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .notes-list .badge.good { background: var(--good); }
+  .notes-list .badge.warn { background: var(--warn); }
+  .notes-list .title {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+    font-size: 15px;
+  }
+  .notes-list .body {
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .notes-list .body code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--paper-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  .severity {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: 2px;
+  }
+  .sev-high { background: rgba(200,66,31,.14); color: var(--bad); }
+  .sev-med  { background: rgba(185,122,24,.14); color: var(--warn); }
+  .sev-low  { background: rgba(46,111,71,.14); color: var(--good); }
+
+  /* ============ DUAL / TRIPLE PHONES ============ */
+  .row-phones {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 3), 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  .row-phones .phone { max-width: none; }
+  .label-below {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .label-below b { color: var(--ink); font-weight: 500; }
+
+  /* ============ COLOR + TYPE AUDIT ============ */
+  .audit-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+  }
+  .audit-card {
+    background: rgba(255,255,255,.4);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px;
+  }
+  .audit-card h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .swatches {
+    display: grid;
+    gap: 10px;
+  }
+  .swatch {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 14px;
+    align-items: center;
+  }
+  .swatch .chip {
+    width: 56px; height: 40px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,.1);
+  }
+  .swatch .name { font-weight: 500; font-size: 14px; }
+  .swatch .role { color: var(--ink-3); font-size: 13px; }
+  .swatch .hex { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+  .type-spec {
+    display: grid; gap: 18px;
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row .spec { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+  /* ============ PRIORITY TABLE ============ */
+  .priority {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+  .priority th, .priority td {
+    text-align: left;
+    padding: 16px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .priority th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  .priority td .rank {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--accent);
+    font-style: italic;
+  }
+  .priority td.what { font-weight: 500; font-size: 16px; }
+  .priority td.why { color: var(--ink-2); font-size: 14.5px; max-width: 460px; }
+  .priority td.move { color: var(--ink-2); font-size: 14.5px; max-width: 380px; }
+  .priority td.effort {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--paper-2);
+    color: var(--ink-2);
+  }
+  .pill.high { background: rgba(200,66,31,.12); color: var(--bad); }
+  .pill.med  { background: rgba(185,122,24,.12); color: var(--warn); }
+  .pill.low  { background: rgba(46,111,71,.12); color: var(--good); }
+
+  /* ============ PULL QUOTE ============ */
+  .pullquote {
+    margin: 40px 0;
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .pullquote p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 0;
+    max-width: 22ch;
+    letter-spacing: -.005em;
+  }
+  .pullquote p::before { content: "“"; color: var(--accent); margin-right: .1em; }
+  .pullquote p::after { content: "”"; color: var(--accent); margin-left: .05em; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 120px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    color: var(--ink-3);
+    font-size: 13px;
+    font-family: var(--mono);
+  }
+  footer .next-steps {
+    color: var(--ink-2);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.6;
+    max-width: 540px;
+  }
+  footer .next-steps b { color: var(--ink); font-weight: 500; }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    .wrap { padding: 32px 20px 80px; }
+    .annotated, .annotated.flip { grid-template-columns: 1fr; gap: 32px; }
+    .annotated .phone, .annotated.flip .phone { max-width: 280px; margin: 0 auto; }
+    .strip { grid-template-columns: repeat(4, 1fr); }
+    .row-phones { grid-template-columns: 1fr 1fr; }
+    .toc { grid-template-columns: 1fr; }
+    .toc a:nth-child(odd) { border-right: 0; padding-right: 4px; }
+    .toc a:nth-child(even) { padding-left: 4px; }
+    .masthead { grid-template-columns: 1fr; }
+    .meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div>
+      <div class="eyebrow">Design Review — AI Chatbot, iOS</div>
+      <h1>What the app <em>says</em>,<br/>and what it <em>does</em>.</h1>
+    </div>
+    <div class="meta">
+      <div><strong>14 screens</strong> reviewed</div>
+      <div>iPhone 16 Pro · v1.0.3</div>
+      <div>Audited May 2026</div>
+    </div>
+  </header>
+
+  <p class="lede">A walkthrough of the current build with notes on visual system, information architecture, onboarding, and the parts users actually <em>touch</em>. Severity tags reflect impact on first-time-user activation, not aesthetic taste.</p>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#flow"><span class="n">01</span><span>The flow at a glance</span><span class="p">p.01</span></a>
+    <a href="#visual"><span class="n">02</span><span>Visual system audit</span><span class="p">p.02</span></a>
+    <a href="#onboarding"><span class="n">03</span><span>Onboarding &amp; paywall</span><span class="p">p.03</span></a>
+    <a href="#home"><span class="n">04</span><span>Home, Library, Log</span><span class="p">p.04</span></a>
+    <a href="#chat"><span class="n">05</span><span>Chat empty states</span><span class="p">p.05</span></a>
+    <a href="#nav"><span class="n">06</span><span>Navigation model</span><span class="p">p.06</span></a>
+    <a href="#findings"><span class="n">07</span><span>Findings, ranked</span><span class="p">p.07</span></a>
+    <a href="#recos"><span class="n">08</span><span>What I'd change first</span><span class="p">p.08</span></a>
+  </nav>
+
+  <!-- ============ 01 FLOW ============ -->
+  <section id="flow">
+    <div class="section-head">
+      <div class="section-num">01 / FLOW</div>
+      <h2>The flow at a <em>glance</em></h2>
+      <div class="section-sub">From cold launch to a usable chat. Five screens of marketing before the user gets to type anything; three different home-shaped destinations after.</div>
+    </div>
+
+    <div class="strip">
+      <figure><div class="phone-mini"><img src="screens/01-splash-logo.png" alt=""/></div><figcaption><span class="num">01</span> Splash</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/02-splash-name.png" alt=""/></div><figcaption><span class="num">02</span> Loading</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/03-welcome.png" alt=""/></div><figcaption><span class="num">03</span> Welcome</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/04-onb-find-answers.png" alt=""/></div><figcaption><span class="num">04</span> Onb · Answers</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/05-onb-math.png" alt=""/></div><figcaption><span class="num">05</span> Onb · Math</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/06-onb-reviews.png" alt=""/></div><figcaption><span class="num">06</span> Reviews</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/07-paywall.png" alt=""/></div><figcaption><span class="num">07</span> Paywall</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/08-home-spark.png" alt=""/></div><figcaption><span class="num">08</span> Home</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/11-home-assistants.png" alt=""/></div><figcaption><span class="num">09</span> Home · Models</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/09-library.png" alt=""/></div><figcaption><span class="num">10</span> Library</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/10-log-empty.png" alt=""/></div><figcaption><span class="num">11</span> Log empty</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/13-chat-chatgpt.png" alt=""/></div><figcaption><span class="num">12</span> Chat · GPT</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/15-chat-coding.png" alt=""/></div><figcaption><span class="num">13</span> Chat · Coding</figcaption></figure>
+      <figure><div class="phone-mini"><img src="screens/12-settings.png" alt=""/></div><figcaption><span class="num">14</span> Settings</figcaption></figure>
+    </div>
+
+    <div class="pullquote">
+      <p>The user is asked to dismiss five screens before they're allowed to type a single message.</p>
+    </div>
+  </section>
+
+  <!-- ============ 02 VISUAL ============ -->
+  <section id="visual">
+    <div class="section-head">
+      <div class="section-num">02 / VISUAL SYSTEM</div>
+      <h2>One brand, <em>three</em> voices.</h2>
+      <div class="section-sub">The app keeps switching dialects between sober tech-product, premium-AI, and App Store ad creative. None are wrong; together they read as unsettled.</div>
+    </div>
+
+    <div class="audit-grid">
+
+      <div class="audit-card" style="grid-column: span 6;">
+        <h4>Palette as observed</h4>
+        <div class="swatches">
+          <div class="swatch">
+            <div class="chip" style="background:#000;"></div>
+            <div><div class="name">Pure black</div><div class="role">Background, app-wide</div></div>
+            <div class="hex">#000000</div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background:#5EEAD4;"></div>
+            <div><div class="name">Mint teal</div><div class="role">Brand glow, headings, active states</div></div>
+            <div class="hex">~#5EEAD4</div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background:#1FB97A;"></div>
+            <div><div class="name">Action green</div><div class="role">CONTINUE / TRY NOW buttons</div></div>
+            <div class="hex">~#1FB97A</div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background:#0F4F3A;"></div>
+            <div><div class="name">Forest panels</div><div class="role">Onboarding bubbles, reviews</div></div>
+            <div class="hex">~#0F4F3A</div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background:#E8A33A;"></div>
+            <div><div class="name">Marketing yellow</div><div class="role">Headline emphasis, star ratings</div></div>
+            <div class="hex">~#E8A33A</div>
+          </div>
+          <div class="swatch">
+            <div class="chip" style="background: linear-gradient(135deg,#7C3AED,#3B82F6,#F59E0B);"></div>
+            <div><div class="name">Category tints</div><div class="role">Per-card accent gradients</div></div>
+            <div class="hex">various</div>
+          </div>
+        </div>
+        <p style="font-size:14px;color:var(--ink-2);margin-top:18px;line-height:1.55;">
+          <b>The problem:</b> three greens that don't sit on the same scale. <i>Mint</i> is calm and premium, <i>action</i> is loud and saturated, <i>forest</i> is illustrative. The marketing-yellow callouts ("Smart Ai-Camera Snap &amp; Solve", "Find Answers", "Join Millions") add a fourth temperature — closer to a hook-tactic ad than a product surface.
+        </p>
+      </div>
+
+      <div class="audit-card" style="grid-column: span 6;">
+        <h4>Type stack as observed</h4>
+        <div class="type-spec">
+          <div class="type-row">
+            <div style="font-family:var(--sans);font-weight:700;font-size:34px;line-height:1;">AI Chatbot</div>
+            <div class="spec">Display · 34/40 · 700</div>
+          </div>
+          <div class="type-row">
+            <div style="font-family:var(--sans);font-weight:700;font-size:28px;line-height:1.1;">Let's spark<br/><span style="color:#1FB97A;">an idea.</span></div>
+            <div class="spec">Hero · 28/32 · 700</div>
+          </div>
+          <div class="type-row">
+            <div style="font-family:var(--sans);font-weight:600;font-size:18px;">Popular Prompts</div>
+            <div class="spec">Section · 18/24 · 600</div>
+          </div>
+          <div class="type-row">
+            <div style="font-family:var(--sans);font-weight:400;font-size:14px;color:var(--ink-3);">Tap to start a conversation</div>
+            <div class="spec">Sub · 14/20 · 400</div>
+          </div>
+          <div class="type-row">
+            <div style="font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:.16em;color:var(--ink-3);">MODEL · LIVE</div>
+            <div class="spec">Tag · 11/14 · 500 · UC</div>
+          </div>
+        </div>
+        <p style="font-size:14px;color:var(--ink-2);margin-top:18px;line-height:1.55;">
+          <b>The good:</b> hierarchy is legible, sizes are large enough on iPhone, body text never drops below 14&nbsp;pt.<br/>
+          <b>The risk:</b> the "color the second word in the title" pattern ("an&nbsp;idea", "first chat", "Ai-Camera", "Find Answers") is doing too much work. By the fifth occurrence it stops feeling like emphasis and starts feeling like a tic.
+        </p>
+      </div>
+
+      <div class="audit-card" style="grid-column: span 12;">
+        <h4>Card vocabulary, side-by-side</h4>
+        <p style="color:var(--ink-2);font-size:14.5px;margin:0 0 18px;max-width:780px;line-height:1.55;">Five different card styles, all on adjacent screens. Each looks competent in isolation; together they suggest a product still figuring out what kind of object a "thing-to-tap-on" is.</p>
+        <div class="row-phones" style="--cols: 4;">
+          <div>
+            <div class="phone"><div class="island"></div><div class="screen"><img src="screens/08-home-spark.png" alt=""/></div></div>
+            <div class="label-below"><b>Quick-action cards</b><br/>Icon + gradient blob + arrow</div>
+          </div>
+          <div>
+            <div class="phone"><div class="island"></div><div class="screen"><img src="screens/11-home-assistants.png" alt=""/></div></div>
+            <div class="label-below"><b>Model cards</b><br/>Logo + status pill + description</div>
+          </div>
+          <div>
+            <div class="phone"><div class="island"></div><div class="screen"><img src="screens/09-library.png" alt=""/></div></div>
+            <div class="label-below"><b>Workflow posters</b><br/>Full-bleed image + category tag</div>
+          </div>
+          <div>
+            <div class="phone"><div class="island"></div><div class="screen"><img src="screens/06-onb-reviews.png" alt=""/></div></div>
+            <div class="label-below"><b>Review cards</b><br/>Forest fill + stars + byline</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ 03 ONBOARDING ============ -->
+  <section id="onboarding">
+    <div class="section-head">
+      <div class="section-num">03 / ONBOARDING</div>
+      <h2>Five gates before <em>first value</em>.</h2>
+      <div class="section-sub">The onboarding sells the app to someone who has already downloaded it. None of it teaches them how to use it, and none of it personalizes the experience.</div>
+    </div>
+
+    <div class="annotated" style="margin-bottom:64px;">
+      <div style="position:relative;">
+        <div class="phone">
+          <div class="island"></div>
+          <div class="screen">
+            <img src="screens/03-welcome.png" alt="Welcome screen"/>
+          </div>
+          <span class="pin" style="top: 58%; left: 50%; transform: translate(-50%,-50%);">1</span>
+          <span class="pin" style="top: 72%; left: 30%;">2</span>
+          <span class="pin" style="top: 88%; left: 50%; transform: translateX(-50%);">3</span>
+        </div>
+      </div>
+      <div class="notes-col">
+        <div class="kicker">Screen 03 · Welcome</div>
+        <h3>Page-one is a <em>billboard</em>, not a doorway.</h3>
+        <p class="summary">It announces the app to a user who already opened it. No personalization, no preview of what's inside, no choice — just a single CONTINUE that will lead to four more screens like it.</p>
+        <ul class="notes-list">
+          <li>
+            <div class="badge">1</div>
+            <div>
+              <div class="title">"Built on GPT-5.2 &amp; GPT-5 Mini" is a vendor flex <span class="severity sev-med">Medium</span></div>
+              <div class="body">Users care that the answers are good, not whose model is underneath. Lead with what the user can <i>do</i>, not the underlying API.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">2</div>
+            <div>
+              <div class="title">"100K+ users" + 5 stars + laurels <span class="severity sev-high">High</span></div>
+              <div class="body">Social-proof furniture belongs on the App Store page. Inside the app it reads as insecure. The user already chose you.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">3</div>
+            <div>
+              <div class="title">CONTINUE button has no destination preview <span class="severity sev-low">Low</span></div>
+              <div class="body">After tap, four more marketing screens appear. The user has no way to know that, and no way to skip.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="annotated flip" style="margin-bottom:64px;">
+      <div class="notes-col">
+        <div class="kicker">Screens 04–05 · Feature carousel</div>
+        <h3>App Store screenshots, <em>shipped inside the app.</em></h3>
+        <p class="summary">These screens duplicate the marketing material that convinced the user to download in the first place. They consume goodwill instead of building it.</p>
+        <ul class="notes-list">
+          <li>
+            <div class="badge">1</div>
+            <div>
+              <div class="title">Headline tone shifts from product to ad copy <span class="severity sev-med">Medium</span></div>
+              <div class="body">"Find <em>Answers</em> to Any Questions", "Smart <em>Ai-Camera</em> Snap &amp; Solve". The yellow-word emphasis is App Store-language; the rest of the app speaks in mint-teal product-language.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">2</div>
+            <div>
+              <div class="title">Mocks show <i>features</i> but not <i>interactions</i> <span class="severity sev-med">Medium</span></div>
+              <div class="body">A floating bubble that says "Recognize → Get Answers" tells me the feature exists. It doesn't teach me how to invoke it. A 5-second video of the math camera in use would do real work; this static collage does not.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">3</div>
+            <div>
+              <div class="title">No "Skip" affordance <span class="severity sev-high">High</span></div>
+              <div class="body">Even returning users have no shortcut. A user who already paid and reinstalled still gets the full five-screen tour.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge good">+</div>
+            <div>
+              <div class="title">Bubble/sticker composition is charming <span class="severity sev-low">Strength</span></div>
+              <div class="body">The "Recognize" + "Get Answers" callouts have personality. Worth keeping the device <em>somewhere</em> — just not as a forced page-turn.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="position:relative;">
+          <div class="phone" style="max-width:none;">
+            <div class="island"></div>
+            <div class="screen"><img src="screens/04-onb-find-answers.png" alt=""/></div>
+            <span class="pin" style="top: 25%; left: 30%;">1</span>
+            <span class="pin" style="top: 75%; left: 38%;">1</span>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <div class="phone" style="max-width:none;">
+            <div class="island"></div>
+            <div class="screen"><img src="screens/05-onb-math.png" alt=""/></div>
+            <span class="pin" style="top: 35%; left: 45%;">2</span>
+            <span class="pin" style="top: 92%; left: 50%; transform: translateX(-50%);">3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotated">
+      <div style="position:relative;">
+        <div class="phone">
+          <div class="island"></div>
+          <div class="screen"><img src="screens/06-onb-reviews.png" alt=""/></div>
+          <span class="pin" style="top: 12%; left: 80%;">1</span>
+          <span class="pin" style="top: 22%; left: 45%;">2</span>
+          <span class="pin" style="top: 77%; left: 50%; transform: translateX(-50%);">3</span>
+        </div>
+      </div>
+      <div class="notes-col">
+        <div class="kicker">Screen 06 · Reviews</div>
+        <h3>The review wall is the <em>weakest</em> screen.</h3>
+        <p class="summary">It does the most to undermine trust because it tries the hardest to manufacture it. Five anonymous testimonials, all five-star, all dated <span style="font-family:var(--mono);font-size:13px;">May 2023</span> — inside a 2026 app.</p>
+        <ul class="notes-list">
+          <li>
+            <div class="badge">1</div>
+            <div>
+              <div class="title">2023 dates inside a 2026 build <span class="severity sev-high">High</span></div>
+              <div class="body">The dates are three years stale. Even if real, they read as either neglected or fabricated. Either reading is bad.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">2</div>
+            <div>
+              <div class="title">Five 5-stars in a row reads as planted <span class="severity sev-high">High</span></div>
+              <div class="body">No 4s, no critique, no nuance. A user who has seen any App Store review section will recognize the pattern instantly.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">3</div>
+            <div>
+              <div class="title">"Join Millions of Happy AI Fans" is dissonant with the visual brand <span class="severity sev-med">Medium</span></div>
+              <div class="body">The yellow-word callout language belongs in a different product. The mint-teal home screen is calm and assured; this is shouting.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 HOME ============ -->
+  <section id="home">
+    <div class="section-head">
+      <div class="section-num">04 / HOME &amp; HUBS</div>
+      <h2>Three homes, <em>one</em> indecision.</h2>
+      <div class="section-sub">The bottom-tab spine is Home · Library · Log — but Home itself contains at least two distinct page templates, and Library duplicates the same job. The user can't form a mental model of where things live.</div>
+    </div>
+
+    <div class="row-phones" style="--cols: 3; margin-bottom:48px;">
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/08-home-spark.png" alt=""/></div></div>
+        <div class="label-below"><b>Home A</b> — "Let's spark an idea"<br/>Search + 4 quick actions + Pro + Elite Tools</div>
+      </div>
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/11-home-assistants.png" alt=""/></div></div>
+        <div class="label-below"><b>Home B</b> — "AI Chatbot"<br/>Assistants carousel + Popular Prompts</div>
+      </div>
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/09-library.png" alt=""/></div></div>
+        <div class="label-below"><b>Library</b> — "Tasks for AI"<br/>Search + Pro + filter chips + 6+ posters</div>
+      </div>
+    </div>
+
+    <div class="annotated">
+      <div style="position:relative;">
+        <div class="phone">
+          <div class="island"></div>
+          <div class="screen"><img src="screens/08-home-spark.png" alt=""/></div>
+          <span class="pin" style="top: 21%; left: 50%; transform: translateX(-50%);">1</span>
+          <span class="pin" style="top: 32%; left: 50%; transform: translateX(-50%);">2</span>
+          <span class="pin" style="top: 53%; left: 50%; transform: translateX(-50%);">3</span>
+          <span class="pin" style="top: 76%; left: 50%; transform: translateX(-50%);">4</span>
+          <span class="pin" style="top: 91%; left: 50%; transform: translateX(-50%);">5</span>
+        </div>
+      </div>
+      <div class="notes-col">
+        <div class="kicker">Home A · "Let's spark an idea"</div>
+        <h3>Six sections, <em>one</em> screen.</h3>
+        <p class="summary">In order down the page: hero, primary input, four quick-action cards, Pro upsell, "Elite Tools" carousel header, plus a teaser of the next carousel below the fold. That's six competing primary actions before scroll.</p>
+        <ul class="notes-list">
+          <li>
+            <div class="badge">1</div>
+            <div>
+              <div class="title">Hero greeting <span class="severity sev-low">OK</span></div>
+              <div class="body">"Let's spark an idea." is warm and works. The colored word trick is fine in isolation; problem is it repeats elsewhere.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">2</div>
+            <div>
+              <div class="title">Composer + quick actions compete for the same job <span class="severity sev-high">High</span></div>
+              <div class="body">"Ask AI anything…" and the "Ask AI" card below it route the user to the same place. One of them is redundant, and the user doesn't know which.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">3</div>
+            <div>
+              <div class="title">Four equal-weight tiles, no chosen path <span class="severity sev-med">Medium</span></div>
+              <div class="body">Ask AI, Web Search, Text to Speech, AI Tasks. They are not at the same level of abstraction — "AI Tasks" contains the others. The grid implies parity that isn't true.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">4</div>
+            <div>
+              <div class="title">Pro upsell injected mid-content <span class="severity sev-med">Medium</span></div>
+              <div class="body">Same banner appears on Library. Two upsells per session, before the user has produced any output, sets a coercive tone.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">5</div>
+            <div>
+              <div class="title">"Elite Tools" naming + premium implication <span class="severity sev-low">Low</span></div>
+              <div class="body">"Elite" carries a paid connotation but the tools below aren't visibly gated. Either commit to "Pro-only" labelling or rename.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 CHAT ============ -->
+  <section id="chat">
+    <div class="section-head">
+      <div class="section-num">05 / CHAT</div>
+      <h2>The empty state is the <em>product</em>.</h2>
+      <div class="section-sub">This is the screen users will see most often — the one they land on every time they tap a model. Right now it's mostly black space.</div>
+    </div>
+
+    <div class="annotated flip">
+      <div class="notes-col">
+        <div class="kicker">Chat · empty state (ChatGPT, Coding Assistant, others)</div>
+        <h3>A blank page is an <em>anxiety</em>, not a feature.</h3>
+        <p class="summary">Every model lands the user on the same template: centered logo, one descriptive sentence, then a vast expanse of black above the composer. No suggested prompts, no recent prompts, no example of what "good" looks like.</p>
+        <ul class="notes-list">
+          <li>
+            <div class="badge">1</div>
+            <div>
+              <div class="title">The hero illustration is too small to do work <span class="severity sev-low">Low</span></div>
+              <div class="body">At 80&nbsp;px circle it's neither a launch graphic nor a useful affordance. Either commit to a hero illustration (300+&nbsp;px, motion, characterful) or remove it.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">2</div>
+            <div>
+              <div class="title">No starter prompts <span class="severity sev-high">High</span></div>
+              <div class="body">For a coding assistant: <code>"Explain this stack trace"</code>, <code>"Refactor this function"</code>, <code>"Write a SwiftUI list"</code>. Even three suggestions cuts cold-start cost dramatically. Right now the user has to invent the entire interaction.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">3</div>
+            <div>
+              <div class="title">No model switcher in the chat <span class="severity sev-med">Medium</span></div>
+              <div class="body">To change from ChatGPT to Qwen the user has to back out twice. The header is a great place for a one-tap model picker.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge">4</div>
+            <div>
+              <div class="title">Composer chrome is heavier than the message it sends <span class="severity sev-low">Low</span></div>
+              <div class="body">A teal hairline border, an image button, and a faint send button. Three weights of green on the same control. Simplify to: image · text · send, all one weight.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="position:relative;">
+          <div class="phone" style="max-width:none;">
+            <div class="island"></div>
+            <div class="screen"><img src="screens/13-chat-chatgpt.png" alt=""/></div>
+            <span class="pin" style="top: 47%; left: 50%; transform:translateX(-50%);">1</span>
+            <span class="pin" style="top: 62%; left: 25%;">2</span>
+            <span class="pin" style="top: 12%; left: 35%;">3</span>
+            <span class="pin" style="top: 93%; left: 50%; transform:translateX(-50%);">4</span>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <div class="phone" style="max-width:none;">
+            <div class="island"></div>
+            <div class="screen"><img src="screens/15-chat-coding.png" alt=""/></div>
+            <span class="pin" style="top: 47%; left: 50%; transform:translateX(-50%);">1</span>
+            <span class="pin" style="top: 62%; left: 25%;">2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pullquote" style="margin-top:64px;">
+      <p>If the user does nothing, the screen tells them nothing. Empty states should always offer a next move.</p>
+    </div>
+  </section>
+
+  <!-- ============ 06 NAV ============ -->
+  <section id="nav">
+    <div class="section-head">
+      <div class="section-num">06 / NAVIGATION</div>
+      <h2>What does "<em>Library</em>" mean,<br/>and what does "<em>Log</em>" mean?</h2>
+      <div class="section-sub">The floating pill nav is visually distinctive. As an information architecture, it's working against the user.</div>
+    </div>
+
+    <div class="row-phones" style="--cols: 3;">
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/08-home-spark.png" alt=""/></div></div>
+        <div class="label-below"><b>Home tab active</b> · "Home" label visible</div>
+      </div>
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/09-library.png" alt=""/></div></div>
+        <div class="label-below"><b>Library tab active</b> · "Library" label visible</div>
+      </div>
+      <div>
+        <div class="phone" style="max-width:none;"><div class="island"></div><div class="screen"><img src="screens/10-log-empty.png" alt=""/></div></div>
+        <div class="label-below"><b>Log tab active</b> · "Log" label visible</div>
+      </div>
+    </div>
+
+    <div class="audit-grid" style="margin-top:36px;">
+      <div class="audit-card" style="grid-column: span 6;">
+        <h4>Naming</h4>
+        <ul class="notes-list">
+          <li>
+            <div class="badge warn">A</div>
+            <div>
+              <div class="title">"Library" reads as content; it actually means task templates</div>
+              <div class="body">A user expecting their saved chats finds illustrated posters of Story / Coding / Interview / Math instead. Better candidates: <code>Tasks</code>, <code>Workflows</code>, <code>Templates</code>.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge warn">B</div>
+            <div>
+              <div class="title">"Log" reads as system logs; it actually means chat history</div>
+              <div class="body">For a chat product, history is the spine of the app. It deserves a louder name — <code>Chats</code>, <code>History</code>, or the model's own avatar with a count badge.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="audit-card" style="grid-column: span 6;">
+        <h4>Behavior</h4>
+        <ul class="notes-list">
+          <li>
+            <div class="badge warn">C</div>
+            <div>
+              <div class="title">Only the active tab shows its label</div>
+              <div class="body">Users have to remember what the inactive icons mean. With three obscure icons (dots-cluster, stack, clock) that's a high memory cost. Show all three labels or use much clearer pictograms.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge warn">D</div>
+            <div>
+              <div class="title">Pill drifts horizontally as you switch tabs</div>
+              <div class="body">The Home position, Library position, and Log position have visibly different x-anchoring across screens 08–11 — the nav doesn't sit in a stable place. Small thing; reads as buggy.</div>
+            </div>
+          </li>
+          <li>
+            <div class="badge warn">E</div>
+            <div>
+              <div class="title">No tab for the user's <i>current</i> conversation</div>
+              <div class="body">If I'm mid-chat with ChatGPT and tap Library, can I get back? The nav vanishes inside a chat, so the answer is "back-arrow twice". A persistent chat anchor would help.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 FINDINGS ============ -->
+  <section id="findings">
+    <div class="section-head">
+      <div class="section-num">07 / SUMMARY</div>
+      <h2>Findings, <em>ranked.</em></h2>
+      <div class="section-sub">Severity weighted by activation impact: how likely a first-time user is to bounce, or to never reach the moment of real value (a useful answer in a chat).</div>
+    </div>
+
+    <table class="priority">
+      <thead>
+        <tr>
+          <th style="width:48px;">#</th>
+          <th>What's wrong</th>
+          <th>Why it matters</th>
+          <th>Cheapest move</th>
+          <th>Severity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rank">01</span></td>
+          <td class="what">Five-screen onboarding gauntlet before first chat</td>
+          <td class="why">Each tap is a churn point. Drop-off compounds; a user excited enough to download should reach value in &lt;10&nbsp;seconds.</td>
+          <td class="move">Collapse to one screen with a "Try a sample chat" CTA. Make the first chat itself the onboarding.</td>
+          <td><span class="pill high">High</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">02</span></td>
+          <td class="what">Chat empty states with no suggested prompts</td>
+          <td class="why">This is the most-viewed screen in the app. Blank-page anxiety is the #1 reason new chat users disengage.</td>
+          <td class="move">Add 3–4 model-specific starter prompts under the hero. Tap inserts into composer.</td>
+          <td><span class="pill high">High</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">03</span></td>
+          <td class="what">Fake-seeming review wall with 2023 dates</td>
+          <td class="why">Actively erodes trust at the exact moment you're asking for it (right before the paywall).</td>
+          <td class="move">Delete the screen. If social proof is needed, use a single quiet line on the paywall.</td>
+          <td><span class="pill high">High</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">04</span></td>
+          <td class="what">Home A vs Home B vs Library — three competing hubs</td>
+          <td class="why">Forces the user to learn the IA before they can do anything. They will guess wrong twice.</td>
+          <td class="move">Pick one: either a chat-first home (composer + recent chats) or a task-first home (templates + recent chats). Not both.</td>
+          <td><span class="pill high">High</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">05</span></td>
+          <td class="what">Pro upsell repeated mid-content on multiple tabs</td>
+          <td class="why">Trust is spent before the user has experienced enough to want more.</td>
+          <td class="move">One contextual upsell when a Pro-only action is attempted. Remove the always-on banners.</td>
+          <td><span class="pill med">Medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">06</span></td>
+          <td class="what">Three greens + marketing yellow in the same palette</td>
+          <td class="why">Reads as unsettled. The brand has a moment (mint glow) — the rest fights it.</td>
+          <td class="move">Pick one mint as the brand color and one accent for CTAs. Delete the yellow callout system entirely.</td>
+          <td><span class="pill med">Medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">07</span></td>
+          <td class="what">"Library" and "Log" don't describe what's in them</td>
+          <td class="why">Two of three tabs are mis-labelled. Discoverability suffers; recall fails.</td>
+          <td class="move">Rename to <code>Tasks</code> and <code>Chats</code> (or merge: chats with a "Templates" entry pinned at top).</td>
+          <td><span class="pill med">Medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">08</span></td>
+          <td class="what">Five different card vocabularies</td>
+          <td class="why">Each in isolation is fine; together they signal a product still finding itself.</td>
+          <td class="move">Reduce to two: a "do something" tile and a "pick a thing" row. Apply consistently.</td>
+          <td><span class="pill med">Medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">09</span></td>
+          <td class="what">No model switcher inside a chat</td>
+          <td class="why">Switching models is a core power-user move; right now it costs three taps.</td>
+          <td class="move">Tappable model name in the chat header → bottom sheet picker.</td>
+          <td><span class="pill med">Medium</span></td>
+        </tr>
+        <tr>
+          <td><span class="rank">10</span></td>
+          <td class="what">Hero illustration on chat empty state is too small</td>
+          <td class="why">Doesn't justify its space. Either it carries the screen or it gets out of the way.</td>
+          <td class="move">Replace with starter-prompt cards (see #2). Reserve illustration for the model picker, not the chat.</td>
+          <td><span class="pill low">Low</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 08 RECOS ============ -->
+  <section id="recos">
+    <div class="section-head">
+      <div class="section-num">08 / DIRECTION</div>
+      <h2>What I'd change <em>first</em>.</h2>
+      <div class="section-sub">If we get one sprint, these three moves matter more than the other twenty combined.</div>
+    </div>
+
+    <div class="audit-grid">
+      <div class="audit-card" style="grid-column: span 4; padding:28px;">
+        <div style="font-family:var(--serif); font-size:64px; line-height:1; color:var(--accent); font-style:italic; margin-bottom:12px;">i.</div>
+        <h3 style="font-family:var(--serif); font-weight:400; font-size:28px; line-height:1.15; margin:0 0 10px;">Cut onboarding to <em style="color:var(--accent);font-style:italic;">one</em> screen.</h3>
+        <p style="color:var(--ink-2); font-size:14.5px; line-height:1.55; margin:0;">Welcome + a single tappable demo prompt that opens a real chat with the model. No carousel, no reviews, no paywall before value. The first answer is the pitch.</p>
+      </div>
+      <div class="audit-card" style="grid-column: span 4; padding:28px;">
+        <div style="font-family:var(--serif); font-size:64px; line-height:1; color:var(--accent); font-style:italic; margin-bottom:12px;">ii.</div>
+        <h3 style="font-family:var(--serif); font-weight:400; font-size:28px; line-height:1.15; margin:0 0 10px;">Make the <em style="color:var(--accent);font-style:italic;">chat empty state</em> the hero.</h3>
+        <p style="color:var(--ink-2); font-size:14.5px; line-height:1.55; margin:0;">Model name, brief identity, four starter prompts as tappable cards, recent chats below. This is the most-visited screen — design it like it is.</p>
+      </div>
+      <div class="audit-card" style="grid-column: span 4; padding:28px;">
+        <div style="font-family:var(--serif); font-size:64px; line-height:1; color:var(--accent); font-style:italic; margin-bottom:12px;">iii.</div>
+        <h3 style="font-family:var(--serif); font-weight:400; font-size:28px; line-height:1.15; margin:0 0 10px;">Decide what <em style="color:var(--accent);font-style:italic;">Home</em> is for.</h3>
+        <p style="color:var(--ink-2); font-size:14.5px; line-height:1.55; margin:0;">Chat-first (composer + recent + models pinned) or task-first (templates + recent). Pick one. Move the other to a single tab. Stop running both as competing home pages.</p>
+      </div>
+    </div>
+
+    <p style="margin-top:48px; font-family:var(--serif); font-size:22px; line-height:1.45; max-width:720px; color:var(--ink-2);">
+      The product has a real visual identity worth keeping — the mint glow, the knot mark, the floating nav pill, the workflow posters. The work isn't to redesign the brand. It's to <em>get out of its way</em> so a user can talk to the AI within ten seconds of opening the app.
+    </p>
+  </section>
+
+  <footer>
+    <div class="next-steps">
+      <b>What's next?</b><br/>
+      Say the word and I'll mock the redesigned onboarding, chat empty state, and home — side-by-side with the current screens, so you can see the diff. Or pick a single screen to deep-dive first.
+    </div>
+    <div>
+      AI Chatbot · UX Audit<br/>
+      May 2026 · v1.0.3
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

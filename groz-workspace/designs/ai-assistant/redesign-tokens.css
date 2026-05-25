@@ -1,0 +1,291 @@
+/* =========================================================================
+   AI Chatbot — Redesign tokens
+   Differentiation strategy vs Nova competitor:
+     - Neon LIME (yellow-shifted) not mint-teal
+     - Mono labels everywhere for system metadata
+     - Sparing neon (only on focused/active states)
+     - Hairline borders + restrained color
+     - Conversation-first IA (not a bot-grid)
+   ========================================================================= */
+
+:root {
+  /* Surfaces — layered black to near-black */
+  --bg-0: #000000;          /* device black */
+  --bg-1: #080808;          /* canvas */
+  --bg-2: #111111;          /* card */
+  --bg-3: #181818;          /* raised card */
+  --bg-4: #1f1f1f;          /* input / pressed */
+
+  /* Hairlines */
+  --line: #242424;
+  --line-soft: #1a1a1a;
+  --line-strong: #303030;
+
+  /* Text — neutral grays */
+  --text-1: #fafafa;        /* primary */
+  --text-2: #a8a8a8;        /* secondary */
+  --text-3: #6e6e6e;        /* tertiary, metadata */
+  --text-4: #404040;        /* quaternary, dividers-as-text */
+
+  /* Neon — yellow-shifted lime, NOT turquoise */
+  --neon: #b6ff5c;          /* primary accent — bright lime neon */
+  --neon-hi: #d4ff8a;        /* hover/lighter */
+  --neon-dim: #82b840;       /* dimmed neon */
+  --neon-deep: #4a6b1f;      /* deep neon */
+  --neon-glow: rgba(182, 255, 92, 0.45);
+  --neon-glow-soft: rgba(182, 255, 92, 0.12);
+  --neon-tint: rgba(182, 255, 92, 0.06);
+
+  /* Functional */
+  --ok: #6cd97a;
+  --warn: #f0b541;
+  --err: #ff6b6b;
+
+  /* Typography */
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Radii — restrained */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+
+  /* Spacing */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 40px;
+}
+
+/* =========== App screen reset =========== */
+.app-screen,
+.app-screen * { box-sizing: border-box; }
+.app-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========== Status bar / home indicator (iPhone chrome) =========== */
+.status-bar {
+  height: 54px;
+  padding: 18px 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-1);
+  flex-shrink: 0;
+}
+.status-bar .right { display: flex; align-items: center; gap: 6px; }
+.home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: var(--text-1);
+  border-radius: 99px;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* =========== Common atoms =========== */
+.mono   { font-family: var(--font-mono); }
+.upper  { text-transform: uppercase; letter-spacing: 0.12em; }
+.tiny   { font-size: 11px; }
+.small  { font-size: 12px; }
+.label  { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
+.label-neon { color: var(--neon); }
+.neon { color: var(--neon); }
+.dim  { color: var(--text-3); }
+.dim2 { color: var(--text-2); }
+.bracket-row { display: flex; align-items: center; gap: 8px; }
+.bracket-row::before,
+.bracket-row::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.hairline { height: 1px; background: var(--line); width: 100%; }
+.hairline-soft { height: 1px; background: var(--line-soft); width: 100%; }
+
+/* Brackets ornament — used as section flourish */
+.brackets {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+/* Composer */
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 18px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.composer .input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+.composer .input::placeholder { color: var(--text-3); }
+.composer .icon-btn {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  color: var(--text-2);
+  background: transparent;
+  border: 0; cursor: pointer;
+}
+.composer .send-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--neon);
+  color: #000;
+  display: grid; place-items: center;
+  border: 0; cursor: pointer;
+  box-shadow: 0 0 0 1px var(--neon-dim), 0 0 24px var(--neon-glow);
+}
+.composer.focused {
+  border-color: var(--neon-dim);
+  box-shadow: 0 0 0 4px var(--neon-tint);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 15px;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-neon {
+  background: var(--neon);
+  color: #000;
+  box-shadow: 0 0 0 1px var(--neon-dim), 0 8px 28px var(--neon-glow-soft);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--line);
+}
+.btn-block { width: 100%; justify-content: center; }
+
+/* Card */
+.card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.card-press { transition: background .15s, border-color .15s; }
+.card-press:active { background: var(--bg-3); border-color: var(--line-strong); }
+
+/* Bottom tab bar */
+.tabbar {
+  position: absolute;
+  left: 16px; right: 16px;
+  bottom: 22px;
+  height: 60px;
+  background: rgba(20,20,20,0.85);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 0 4px;
+}
+.tabbar .tab {
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  cursor: pointer;
+  border-radius: 18px;
+  position: relative;
+}
+.tabbar .tab.active {
+  color: var(--neon);
+}
+.tabbar .tab.active::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  width: 22px; height: 2px;
+  background: var(--neon);
+  box-shadow: 0 0 12px var(--neon-glow);
+  border-radius: 2px;
+}
+
+/* Scroll padding helpers */
+.with-tabbar { padding-bottom: 98px; }
+
+/* Subtle grid backgrounds for "console" feel */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+}
+
+/* SVG glow utility */
+.glow { filter: drop-shadow(0 0 8px var(--neon-glow)); }
+
+/* Code block styles for chat */
+.code-block {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-1);
+  padding: 12px 14px;
+  margin: 8px 0;
+  overflow: hidden;
+  line-height: 1.55;
+}
+.code-block .kw { color: #c084fc; }
+.code-block .str { color: var(--neon); }
+.code-block .num { color: #f0b541; }
+.code-block .fn { color: #7dd3fc; }
+.code-block .cm { color: var(--text-3); }
