@@ -118,6 +118,32 @@ Doar pe pași opționali (ex: "Post results") păstrăm `|| true`.
 | 4 | Doar Package.swift, nu .xcodeproj | ❌ TODO | ❌ TODO |
 | 5 | Device name hardcodat | ❌ TODO | ❌ TODO |
 | 6 | `\|\| true` maschează erori | ❌ TODO | ❌ TODO |
+| 7 | Builder poate confunda screenshot-uri concurenți cu design | ❌ TODO | ❌ TODO |
+
+---
+
+## 7. RISC CRITIC: `screens/` conține screenshot-uri concurenți, NU design-ul nostru
+
+**Issue:** Folderul `groz-workspace/designs/{app}/screens/` conține PNG-uri ale aplicațiilor concurente (ChatGPT, Spark etc.) — folosite ca referință pentru designer. Builder poate să le copieze pixel-perfect, ceea ce = **Apple Guideline 4.3 reject INSTANT** + posibilă acuzație de clonă.
+
+**Impact:** Apple respinge app-ul, sau mai rău — acțiune legală de la concurent. Risc maxim.
+
+**Root cause:** Numele folderului `screens/` e ambiguu — sugerează "ecranele app-ului". Builder nu știe că sunt referințe de la competitor.
+
+**Fix în reguli:** ❌ TODO
+
+1. Adaugă în builder.md secțiune **CRITICAL — Ce să NU copiezi:**
+   - Folderul `screens/` = referință competitor, **NU folosi pentru implementare**
+   - Folderul `competitor-refs/` (redenumire propusă) = strict de evitat
+   - Singurele surse pentru implementare: `Redesign.html` + fișierele `.jsx` + `redesign-tokens.css`
+
+2. Redenumește `screens/` → `competitor-refs/` (clar că NU se folosesc)
+
+3. În `design-notes.md` adaugă header de top:
+   ```
+   ⚠️ IMPLEMENTAREA folosește DOAR fișierele Redesign.html / *.jsx / *.css
+   ⚠️ Folderul competitor-refs/ = strict pentru context, NU pentru cod
+   ```
 
 ---
 
