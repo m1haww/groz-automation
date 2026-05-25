@@ -118,7 +118,56 @@ Doar pe pași opționali (ex: "Post results") păstrăm `|| true`.
 | 4 | Doar Package.swift, nu .xcodeproj | ❌ TODO | ❌ TODO |
 | 5 | Device name hardcodat | ❌ TODO | ❌ TODO |
 | 6 | `\|\| true` maschează erori | ❌ TODO | ❌ TODO |
-| 7 | Builder poate confunda screenshot-uri concurenți cu design | ❌ TODO | ❌ TODO |
+| 7 | Builder poate confunda screenshot-uri concurenți cu design | ✅ workaround | ❌ TODO |
+| 8 | Builder a scris cod cu eroare de type inference Swift | ❌ TODO | ❌ TODO |
+| 9 | xcodegen `project.yml` lipsea — Builder doar Package.swift | ✅ workaround | ❌ TODO |
+| 10 | codemagic.yaml folosea destination nepotrivit → .app gol | ✅ workaround | ❌ TODO |
+
+---
+
+## 8. Cod Swift cu eroare de type inference
+
+**Issue:** În `OnboardingVariantE.swift:28`:
+```swift
+withAnimation(.spring(...)) {
+    revealed.insert(i)  // ❌ Set.insert returnează tuple
+}
+```
+
+Eroare: `conflicting arguments to generic parameter 'Result' ('Void' vs. '(inserted: Bool, memberAfterInsert: Int)')`
+
+**Impact:** Build complet eșuat, 0 .app generat → 0 screenshots.
+
+**Root cause:** Builder nu validează că codul Swift compilează. Generează cod sintactic corect dar cu probleme de tip pe care doar compilatorul le prinde.
+
+**Fix:** `_ = revealed.insert(i)` — ignoră return-ul.
+
+**Fix în reguli:** ❌ TODO
+
+În builder.md adaugă **Regula Swift Type Safety:**
+- Toate apelurile la `Set.insert()`, `Set.remove()`, `Dictionary.updateValue()` în context Void → folosește `_ =`
+- Evită `withAnimation { someClosureReturningValue() }` — wrap în `{ _ = ... }`
+- Preferă `revealed.formUnion([i])` (returnează Void) în loc de `revealed.insert(i)`
+
+## 9. xcodegen `project.yml` lipsea
+
+**Issue:** Builder generează doar `Package.swift` ca `.library` → Codemagic nu poate face iOS app.
+
+**Fix:** `project.yml` cu type: application + sources + Info.plist.
+
+**Fix în reguli:** ❌ TODO
+
+În builder.md PUNCT 4 (Scaffold), adaugă explicit:
+- **OBLIGATORIU `project.yml`** pentru xcodegen (NU Package.swift ca app)
+- Template complet în builder.md
+
+## 10. codemagic.yaml — destination greșit
+
+**Issue:** `xcodebuild -destination "generic/platform=iOS Simulator"` produce .app fără executable.
+
+**Fix:** Boot simulator primul → folosește UDID concret: `-destination "id=$DEVICE_UDID"`.
+
+**Fix în reguli:** ❌ TODO — template codemagic.yaml din `ai-assistant` (când va merge) devine referință.
 
 ---
 
